@@ -33,7 +33,7 @@ const LoadingCamera = ({ size=400 }) => {
       <circle r="200" cx="720" cy="480" fill="black" mask="url(#holesinreel2)" transform="rotate(0)" transform-origin="720 480" id="reel2"/>
       <path
         d="M 1070,620 l -350,150 l 350,150 l 0,-300"
-        stroke="black" stroke-width="60" stroke-linecap="round" stroke-linejoin="round"
+        stroke="black" strokeWidth="60" strokeLinecap="round" strokeLinejoin="round"
         fill="black" mask="url(#rightborder)"
       />
       <rect width="600" height="400" rx="45" x="260" y="560" fill="black" mask="url(#holesincamera)" />

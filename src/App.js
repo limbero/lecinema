@@ -9,6 +9,7 @@ import LoadingCamera from './LoadingCamera';
 const App = () => {
   const [films, setFilms] = useLocalStorage("leFilms", []);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const [selectedFilm, setSelectedFilm] = useState(null);
 
@@ -17,15 +18,33 @@ const App = () => {
     useGeolocated({
       userDecisionTimeout: 10000,
     });
+  console.log(JSON.stringify({ coords, isGeolocationAvailable, isGeolocationEnabled }, null, 4));
+  if (!error) {
+    setError(JSON.stringify({ coords, isGeolocationAvailable, isGeolocationEnabled }, null, 4))
+  }
 
   const getFilms = async () => {
+    setError(null);
     setLoading(true);
     let url = `https://home.limbe.ro/lecinema/films-showtimes?username=${username}`;
     if (isGeolocationAvailable && isGeolocationEnabled && coords?.latitude && coords?.longitude) {
       url += `&coordinates=${coords?.latitude},${coords?.longitude}`;
     }
-    const newFilms = await fetch(url).then(res => res.json()).catch(e => films);
+    const newFilms = await fetch(url)
+      .then(res => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw new Error(`${res.status}: ${res.statusText}`);
+        }
+      })
+      .catch(e => {
+        console.error(`${e.name}: "${e.message}"`);
+        setError(`${e.name}: "${e.message}", ${JSON.stringify({ coords, isGeolocationAvailable, isGeolocationEnabled }, null, 4)}`)
+        return [];
+      });
     setLoading(false);
+    console.log(newFilms);
     setFilms([...newFilms].sort(function (a, b) {
       return a.title.localeCompare(b.title);
     }));
@@ -46,24 +65,24 @@ const App = () => {
       <SubmitButton onClick={() => getFilms()} disabled={loading}>
         Fetch
       </SubmitButton>
-      <LoadingDiv loading={loading}>
+      <LoadingDiv $loading={loading}>
         <LoadingCamera size={300} />
       </LoadingDiv>
-      <PostersContainer loading={loading}>
+      <PostersContainer $loading={loading}>
         {
           films.map(film => (
             <FilmPoster key={film.letterboxd_id}
               style={{
-                background: `url(${film.poster_image_thumbnail}), radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(252,70,107,1) 100%)`,
+                backgroundImage: `url(${film.poster_image}), radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(252,70,107,1) 100%)`,
                 backgroundSize: "cover",
               }}
               onClick={() => setSelectedFilm(film)}
             >
-              {!film.poster_image_thumbnail ? (
+              {!film.poster_image ? (
                 <TitleText>
-                  <span>
+                  <p>
                     {film.title}
-                  </span>
+                  </p>
                 </TitleText>
               ) : null}
             </FilmPoster>
@@ -71,6 +90,11 @@ const App = () => {
         }
       </PostersContainer>
       {selectedFilm ? <Details film={selectedFilm} close={() => setSelectedFilm(null)} /> : null}
+      {error ? (
+        <p>
+          {error}
+        </p>
+      ) : null}
     </Wrapper>
   );
 };
@@ -138,7 +162,7 @@ const LoadingDiv = styled.div`
   z-index: 1;
   pointer-events: none;
 
-  opacity: ${props => props.loading ? "100%" : "0%"};
+  opacity: ${props => props.$loading ? "100%" : "0%"};
   transition: opacity .25s;
 `;
 
@@ -156,7 +180,7 @@ const PostersContainer = styled.div`
     margin: 60px 40px;
   }
 
-  opacity: ${props => props.loading ? "50%" : "100%"};
+  opacity: ${props => props.$loading ? "50%" : "100%"};
   transition: opacity .25s;
 `;
 
@@ -183,8 +207,14 @@ const TitleText = styled.div`
   width: 100%;
   height: 100%;
   text-align: center;
+
+  table-layout: fixed;
+  width : 100%;
   
-  & span {
+  & p {
+    overflow-wrap: break-word;
+    hyphens: auto;
+
     text-transform: uppercase;
     letter-spacing: 1px;
     font-family: 'Londrina Solid', impact, sans-serif;
