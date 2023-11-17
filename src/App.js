@@ -6,6 +6,19 @@ import styled from 'styled-components';
 import Details from "./Details";
 import LoadingCamera from './LoadingCamera';
 
+// thx to https://stackoverflow.com/a/37726654
+function cloneAsObject(obj) {
+  if (obj === null || !(obj instanceof Object)) {
+    return obj;
+  }
+  var temp = (obj instanceof Array) ? [] : {};
+  // ReSharper disable once MissingHasOwnPropertyInForeach
+  for (var key in obj) {
+    temp[key] = cloneAsObject(obj[key]);
+  }
+  return temp;
+}
+
 const App = () => {
   const [films, setFilms] = useLocalStorage("leFilms", []);
   const [loading, setLoading] = useState(false);
@@ -14,11 +27,13 @@ const App = () => {
   const [selectedFilm, setSelectedFilm] = useState(null);
 
   const [username, setUsername] = useLocalStorage("letterboxdUsername", "limbero");
-  const { coords, isGeolocationAvailable, isGeolocationEnabled } =
+  const geoLocated = cloneAsObject(
     useGeolocated({
       userDecisionTimeout: 10000,
-    });
-  console.log(JSON.stringify({ coords, isGeolocationAvailable, isGeolocationEnabled }, null, 4));
+    })
+  );
+  const { coords, isGeolocationAvailable, isGeolocationEnabled } = geoLocated;
+  console.log(JSON.stringify(geoLocated, null, 4));
   if (!error) {
     setError(JSON.stringify({ coords, isGeolocationAvailable, isGeolocationEnabled }, null, 4))
   }
@@ -33,6 +48,8 @@ const App = () => {
     const newFilms = await fetch(url)
       .then(res => {
         if (res.ok) {
+          console.log(geoLocated);
+          setError(JSON.stringify(geoLocated, null, 4))
           return res.json();
         } else {
           throw new Error(`${res.status}: ${res.statusText}`);
@@ -40,7 +57,7 @@ const App = () => {
       })
       .catch(e => {
         console.error(`${e.name}: "${e.message}"`);
-        setError(`${e.name}: "${e.message}", ${JSON.stringify({ coords, isGeolocationAvailable, isGeolocationEnabled }, null, 4)}`)
+        setError(`${e.name}: "${e.message}", ${JSON.stringify(geoLocated, null, 4)}`)
         return [];
       });
     setLoading(false);
@@ -91,9 +108,9 @@ const App = () => {
       </PostersContainer>
       {selectedFilm ? <Details film={selectedFilm} close={() => setSelectedFilm(null)} /> : null}
       {error ? (
-        <p>
+        <ErrorMessage>
           {error}
-        </p>
+        </ErrorMessage>
       ) : null}
     </Wrapper>
   );
@@ -102,6 +119,7 @@ const App = () => {
 const Wrapper = styled.div`
   font-family: Helvetica;
   text-align: center;
+  padding-bottom: 50px;
 `;
 
 const SiteHeader = styled.h1`
@@ -225,6 +243,26 @@ const TitleText = styled.div`
     color: #FFF;
     display: table-cell;
     vertical-align: middle;
+  }
+`;
+
+const ErrorMessage = styled.pre`
+  margin: 50px auto;
+  text-align: left;
+  font-family: andale mono, monospace;
+
+  background-color: #FCC;
+  color: #000;
+  border: 1px solid #F88;
+
+  overflow-x: scroll;
+
+  max-width: 60vw;
+  @media (max-width: 600px) {
+    max-width: 80vw;
+  }
+  @media (max-width: 500px) {
+    max-width: 95vw;
   }
 `;
 
