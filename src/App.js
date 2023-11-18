@@ -56,8 +56,11 @@ const App = () => {
         }
       })
       .catch(e => {
-        console.error(`${e.name}: "${e.message}"`);
-        setError(`${e.name}: "${e.message}", ${JSON.stringify(geoLocated, null, 4)}`)
+        let errorString = `${e.name}: "${e.message}",\n`;
+        errorString    += `request URL: "${url}"\n`
+        errorString    += `${JSON.stringify(geoLocated, null, 4)}`
+        console.error(errorString);
+        setError(errorString);
         return [];
       });
     setLoading(false);
@@ -96,7 +99,7 @@ const App = () => {
               onClick={() => setSelectedFilm(film)}
             >
               {!film.poster_image ? (
-                <TitleText>
+                <TitleText lang="en">
                   <p>
                     {film.title}
                   </p>
@@ -220,17 +223,19 @@ const FilmPoster = styled.div`
   cursor: pointer;
 `;
 
-const TitleText = styled.div`
+const TitleText = styled.article`
   display: table;
   width: 100%;
   height: 100%;
   text-align: center;
 
   table-layout: fixed;
-  width : 100%;
+  width: 100%;
   
   & p {
-    overflow-wrap: break-word;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
     hyphens: auto;
 
     text-transform: uppercase;
