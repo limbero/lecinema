@@ -16,7 +16,7 @@ const Details = ({ film, close }) => {
           ✕
         </CloseButton>
         <Content>
-          <Title>{film.title}</Title>
+          <Title>{film.original_language == "sv" ? film.original_title : film.title}</Title>
           <p>
             <a href={film.url}>Read more on Letterboxd.</a>
           </p>
