@@ -19,20 +19,31 @@ function cloneAsObject(obj) {
   return temp;
 }
 
+const TIME_FRAMES = {
+  Anytime: "anytime",
+  Today: "today",
+  Tomorrow: "tomorrow",
+  ThisWeek: "this_week"
+};
+const TIME_FRAME_LABELS = {
+  Anytime: "Anytime",
+  Today: "Today",
+  Tomorrow: "Tomorrow",
+  ThisWeek: "This week"
+}
+
 const App = () => {
   const [films, setFilms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const [selectedFilm, setSelectedFilm] = useState(null);
-
+  const [timeframe, setTimeframe] = useLocalStorage("leTimeframe", TIME_FRAMES.Anytime);
   const [username, setUsername] = useLocalStorage("letterboxdUsername", "limbero");
-  const geoLocated = cloneAsObject(
-    useGeolocated({
-      userDecisionTimeout: 10000,
-    })
-  );
-  const { coords, isGeolocationAvailable, isGeolocationEnabled } = geoLocated;
+  const geoLocated = useGeolocated({
+    userDecisionTimeout: 10000,
+  });
+  const { coords, isGeolocationAvailable, isGeolocationEnabled } = cloneAsObject(geoLocated);
 
   const getFilms = async () => {
     setError(null);
@@ -41,6 +52,7 @@ const App = () => {
     if (isGeolocationAvailable && isGeolocationEnabled && coords?.latitude && coords?.longitude) {
       url += `&coordinates=${coords?.latitude?.toFixed(3)},${coords?.longitude?.toFixed(3)}`;
     }
+    url += `&timeframe=${timeframe}`;
     const newFilms = await fetch(url)
       .then(res => {
         if (res.ok) {
@@ -65,25 +77,47 @@ const App = () => {
   return (
     <Wrapper>
       <SiteHeader>Le Cinema</SiteHeader>
-      <div style={{
-        display: "flex",
-        alignItems: "flex-start",
-        justifyContent: "center",
-      }}>
-        <UsernameInput
-          value={username}
-          disabled={loading}
-          onChange={event => setUsername(event.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              getFilms();
-            }
-          }}
-        />
-        <SubmitButton onClick={() => getFilms()} disabled={loading}>
+      <HorizontalFlex style={{ gap: "20px" }}>
+        <VerticalFlex>
+          <Label>When?</Label>
+          <ButtonGroup>
+            {Object.entries(TIME_FRAMES).map(([key, value]) => (
+              <div key={key}>
+                <input
+                  type="radio"
+                  id={key}
+                  name="timeFrame"
+                  disabled={loading}
+                  checked={timeframe === value}
+                  value={value}
+                  onClick={() => setTimeframe(value)}
+                  onChange={e => { }}
+                />
+                <label htmlFor={key}>{TIME_FRAME_LABELS[key]}</label>
+              </div>
+            ))}
+          </ButtonGroup>
+        </VerticalFlex>
+
+        <VerticalFlex>
+          <Label htmlFor="usernameField">Letterboxd username</Label>
+          <UsernameInput
+            id="usernameField"
+            value={username}
+            disabled={loading}
+            onChange={event => setUsername(event.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                getFilms();
+              }
+            }}
+          />
+        </VerticalFlex>
+
+        <Button onClick={() => getFilms()} disabled={loading}>
           Fetch
-        </SubmitButton>
-      </div>
+        </Button>
+      </HorizontalFlex>
       <LoadingDiv $loading={loading}>
         <LoadingCamera size={300} />
       </LoadingDiv>
@@ -135,16 +169,90 @@ const SiteHeader = styled.h1`
   margin-bottom: 0;
 `;
 
+const HorizontalFlex = styled.div`
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex-wrap: wrap;
+`;
+const VerticalFlex = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const Label = styled.label`
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.75em;
+`;
+
+const ButtonGroup = styled(HorizontalFlex)`
+  & div {
+    & input {
+      display: none;
+    }
+    & label {
+      cursor: pointer;
+
+      border: 0;
+      background: none;
+
+      display: inline-block;
+      box-sizing: border-box;
+      height: 40px;
+      padding: 8px 18px;
+
+      color: #700;
+      border: 2px solid #700;
+      background-color: none;
+
+      border-radius: 8px;
+
+      font-size: 1.05em;
+      @media (max-width: 500px) {
+        height: 30px;
+        padding: 5px 9px 2px;
+        font-size: 0.85em;
+      }
+    }
+    & input:disabled {
+      &:checked+label {
+        background-color: #777;
+        border-color: #777;
+      }
+      &:not(:checked)+label {
+        border-color: #777;
+        color: #777;
+      }
+    }
+    & input:checked+label {
+      color: #FFF;
+      background-color: #700;
+    }
+    &:first-child label {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    &:last-child label {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+    &:not(:last-child) label {
+      border-right: none;
+    }
+    &:not(:first-child):not(:last-child) label {
+      border-radius: 0;
+    }
+  }
+`;
+
 const UsernameInput = styled.input.attrs({ type: 'text' })`
   box-sizing: border-box;
   border: 2px solid #700;
-  border-right: none;
   height: 40px;
   padding: 10px 10px;
 
-  border-radius: 0;
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
+  border-radius: 8px;
 
   font-size: 1.05em;
 
@@ -157,24 +265,27 @@ const UsernameInput = styled.input.attrs({ type: 'text' })`
     border-color: #777;
   }
 `;
-const SubmitButton = styled.button`
+const Button = styled.button`
+  cursor: pointer;
+
   border: 0;
   background: none;
   
   display: inline-block;
   box-sizing: border-box;
   height: 40px;
-  padding: 10px 20px;
+  padding: 8px 18px;
 
   color: #FFF;
+  border: 2px solid #700;
   background-color: #700;
 
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
+  border-radius: 8px;
 
   font-size: 1.05em;
   &:disabled {
     background-color: #777;
+    border-color: #777;
   }
 `;
 
