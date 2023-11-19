@@ -57,8 +57,8 @@ const App = () => {
       })
       .catch(e => {
         let errorString = `${e.name}: "${e.message}",\n`;
-        errorString    += `request URL: "${url}"\n`
-        errorString    += `${JSON.stringify(geoLocated, null, 4)}`
+        errorString += `request URL: "${url}"\n`
+        errorString += `${JSON.stringify(geoLocated, null, 4)}`
         console.error(errorString);
         setError(errorString);
         return [];
@@ -100,7 +100,10 @@ const App = () => {
             >
               {!film.poster_image ? (
                 <TitleText lang="en">
-                  <p>
+                  <p style={{
+                    fontSize: film.title.length > 25 ? (film.title.length > 40 ? "25px" : "30px") : "40px",
+                    lineHeight: film.title.length > 25 ? (film.title.length > 40 ? "30px" : "37px") : "50px",
+                  }}>
                     {film.title}
                   </p>
                 </TitleText>
@@ -225,7 +228,6 @@ const FilmPoster = styled.div`
 
 const TitleText = styled.article`
   display: table;
-  width: 100%;
   height: 100%;
   text-align: center;
 
@@ -238,9 +240,9 @@ const TitleText = styled.article`
     -ms-hyphens: auto;
     hyphens: auto;
 
-    text-transform: uppercase;
+    text-transform: lowercase;
     letter-spacing: 1px;
-    font-family: 'Londrina Solid', impact, sans-serif;
+    font-family: 'Reliable', impact, sans-serif;
     font-weight: 400;
     font-size: 40px;
     line-height: 50px;
@@ -248,6 +250,7 @@ const TitleText = styled.article`
     color: #FFF;
     display: table-cell;
     vertical-align: middle;
+    padding: 10px;
   }
 `;
 
