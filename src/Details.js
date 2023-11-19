@@ -23,19 +23,19 @@ const Details = ({ film, close }) => {
           <ShowtimeTable>
             <thead>
               <tr>
-                <td>Datum</td>
-                <td>Tid</td>
-                <td>Biograf</td>
-                <td>Boka</td>
+                <th>Datum</th>
+                <th>Tid</th>
+                <th>Biograf</th>
+                <th>Boka</th>
               </tr>
             </thead>
             <tbody>
               {showtimes.map(showing => (
                 <tr key={showing.id}>
-                  <td>{showing.start_date}</td>
+                  <td>{showing.start_date.replaceAll("-", "\u2011")}</td>
                   <td>{showing.start_time}</td>
                   <td>{showing.cinema.name}</td>
-                  <td><a href={showing.booking_link}>Boka här</a></td>
+                  <td><a href={showing.booking_link}>Boka&nbsp;här</a></td>
                 </tr>
               ))}
             </tbody>
@@ -58,25 +58,28 @@ const Title = styled.h1`
 const ShowtimeTable = styled.table`
   margin: 30px auto 0;
 
-  border-collapse: collapse;
-
-  outline: 2px solid #500;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
   border-bottom-left-radius: 8px;
 
-  @media (max-width: 500px) {
+  border-spacing: 0;
+
+  @media (max-width: 600px) {
     border-radius: 0 !important;
+    table-layout: fixed;
     width: 100%;
   }
 
-  & thead {
-    display:block;
+  & thead tr {
+    position: sticky;
+    top: 0px;
+
     background: #500;
-    border-color: #500;
     color: #FFF;
-    & td {
+    & th {
+      padding: 15px 20px;
+      font-weight: 400;
       &:first-child {
         border-top-left-radius: 8px;
       }
@@ -86,12 +89,8 @@ const ShowtimeTable = styled.table`
     }
   }
   & tbody {
-    display: block;
     overflow: auto;
     max-height: 50vh;
-    @media (max-width: 500px) {
-      max-height: none;
-    }
     & tr:nth-of-type(even) {
       background-color: #E5E5E5;
     }
@@ -108,6 +107,10 @@ const ShowtimeTable = styled.table`
   }
   & td {
     padding: 15px 20px;
+    overflow: hidden;
+    @media (max-width: 600px) {
+      padding: 15px 0;
+    }
   }
 `;
 
@@ -125,11 +128,13 @@ const BackgroundCover = styled.div`
 const Modal = styled.div`
   position: absolute;
   top: 50px;
+  bottom: 50px;
   left: 50%;
   transform: translate(-50%, 0);
   display: block;
+  overflow-y: scroll;
 
-  @media (max-width: 500px) {
+  @media (max-width: 600px) {
     top: 0;
     right: 0;
     bottom: 0;
@@ -148,20 +153,16 @@ const Modal = styled.div`
   border: 1px solid #BBB;
   border-radius: 5px;
   box-shadow: 0 0 20px 2px rgba(0,0,0, 0.5);
-
-  overflow-y: hidden;
 `;
 
 const Content = styled.div`
   box-sizing: border-box;
   padding: 50px;
 
-  @media (max-width: 500px) {
+  @media (max-width: 600px) {
     padding: 50px 0 0;
     height: 100vh;
   }
-
-  overflow-y: scroll;
 `;
 
 const CloseButton = styled.button`

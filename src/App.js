@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useGeolocated } from "react-geolocated";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import styled from 'styled-components';
@@ -44,6 +44,10 @@ const App = () => {
     userDecisionTimeout: 10000,
   });
   const { coords, isGeolocationAvailable, isGeolocationEnabled } = cloneAsObject(geoLocated);
+
+  useEffect(() => {
+    selectedFilm ? document.body.style.overflow = 'hidden' : document.body.style.overflow = 'unset';
+ }, [selectedFilm]);
 
   const getFilms = async () => {
     setError(null);
