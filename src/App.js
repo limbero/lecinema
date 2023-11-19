@@ -72,19 +72,25 @@ const App = () => {
   return (
     <Wrapper>
       <SiteHeader>Le Cinema</SiteHeader>
-      <UsernameInput
-        value={username}
-        disabled={loading}
-        onChange={event => setUsername(event.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            getFilms();
-          }
-        }}
-      />
-      <SubmitButton onClick={() => getFilms()} disabled={loading}>
-        Fetch
-      </SubmitButton>
+      <div style={{
+        display: "flex",
+        alignItems: "flex-start",
+        justifyContent: "center",
+      }}>
+        <UsernameInput
+          value={username}
+          disabled={loading}
+          onChange={event => setUsername(event.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              getFilms();
+            }
+          }}
+        />
+        <SubmitButton onClick={() => getFilms()} disabled={loading}>
+          Fetch
+        </SubmitButton>
+      </div>
       <LoadingDiv $loading={loading}>
         <LoadingCamera size={300} />
       </LoadingDiv>
