@@ -149,6 +149,7 @@ const UsernameInput = styled.input.attrs({ type: 'text' })`
   height: 40px;
   padding: 10px 10px;
 
+  border-radius: 0;
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
 
@@ -175,7 +176,6 @@ const SubmitButton = styled.button`
   color: #FFF;
   background-color: #700;
 
-  border-radius: 0;
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
 
