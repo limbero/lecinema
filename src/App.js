@@ -33,23 +33,17 @@ const App = () => {
     })
   );
   const { coords, isGeolocationAvailable, isGeolocationEnabled } = geoLocated;
-  console.log(JSON.stringify(geoLocated, null, 4));
-  if (!error) {
-    setError(JSON.stringify({ coords, isGeolocationAvailable, isGeolocationEnabled }, null, 4))
-  }
 
   const getFilms = async () => {
     setError(null);
     setLoading(true);
     let url = `https://home.limbe.ro/lecinema/films-showtimes?username=${username}`;
     if (isGeolocationAvailable && isGeolocationEnabled && coords?.latitude && coords?.longitude) {
-      url += `&coordinates=${coords?.latitude},${coords?.longitude}`;
+      url += `&coordinates=${coords?.latitude?.toFixed(3)},${coords?.longitude?.toFixed(3)}`;
     }
     const newFilms = await fetch(url)
       .then(res => {
         if (res.ok) {
-          console.log(geoLocated);
-          setError(JSON.stringify(geoLocated, null, 4))
           return res.json();
         } else {
           throw new Error(`${res.status}: ${res.statusText}`);
@@ -64,7 +58,6 @@ const App = () => {
         return [];
       });
     setLoading(false);
-    console.log(newFilms);
     setFilms([...newFilms].sort(function (a, b) {
       return a.title.localeCompare(b.title);
     }));
