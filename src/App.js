@@ -175,6 +175,7 @@ const SubmitButton = styled.button`
   color: #FFF;
   background-color: #700;
 
+  border-radius: 0;
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
 
