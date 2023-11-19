@@ -206,9 +206,9 @@ const PostersContainer = styled.div`
   gap: 30px 20px;
   
   @media (max-width: 500px) {
-    grid-template-columns: repeat(auto-fill, 130px);
-    gap: 40px 40px;
-    margin: 60px 40px;
+    grid-template-columns: repeat(auto-fill, 35vw);
+    gap: 10vw 10vw;
+    margin: 10vw 10vw;
   }
 
   opacity: ${props => props.$loading ? "50%" : "100%"};
@@ -220,8 +220,8 @@ const FilmPoster = styled.div`
   height: 231px;
   
   @media (max-width: 500px) {
-    width: 130px;
-    height: 195px;
+    width: 35vw;
+    height: 52.5vw;
   }
 
   display: inline-block;
