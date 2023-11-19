@@ -20,7 +20,7 @@ function cloneAsObject(obj) {
 }
 
 const App = () => {
-  const [films, setFilms] = useLocalStorage("leFilms", []);
+  const [films, setFilms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
