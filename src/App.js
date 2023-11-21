@@ -19,6 +19,24 @@ function cloneAsObject(obj) {
   return temp;
 }
 
+// thx to https://stackoverflow.com/a/17415677
+function toIsoString(date) {
+  let tzo = -date.getTimezoneOffset(),
+    dif = tzo >= 0 ? '+' : '-',
+    pad = function (num) {
+      return (num < 10 ? '0' : '') + num;
+    };
+
+  return date.getFullYear() +
+    '-' + pad(date.getMonth() + 1) +
+    '-' + pad(date.getDate()) +
+    'T' + pad(date.getHours()) +
+    ':' + pad(date.getMinutes()) +
+    ':' + pad(date.getSeconds()) +
+    dif + pad(Math.floor(Math.abs(tzo) / 60)) +
+    ':' + pad(Math.abs(tzo) % 60);
+}
+
 const TIME_FRAMES = {
   Anytime: "anytime",
   Today: "today",
@@ -47,7 +65,7 @@ const App = () => {
 
   useEffect(() => {
     selectedFilm ? document.body.style.overflow = 'hidden' : document.body.style.overflow = 'unset';
- }, [selectedFilm]);
+  }, [selectedFilm]);
 
   const getFilms = async () => {
     setError(null);
@@ -56,7 +74,40 @@ const App = () => {
     if (isGeolocationAvailable && isGeolocationEnabled && coords?.latitude && coords?.longitude) {
       url += `&coordinates=${coords?.latitude?.toFixed(3)},${coords?.longitude?.toFixed(3)}`;
     }
-    url += `&timeframe=${timeframe}`;
+    let timeFrom, timeTo;
+    switch (timeframe) {
+      case TIME_FRAMES.Anytime:
+        timeFrom = toIsoString(new Date());
+        break;
+      case TIME_FRAMES.Today:
+        timeFrom = toIsoString(new Date());
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0,0,0,0);
+        timeTo = toIsoString(tomorrow);
+        break;
+      case TIME_FRAMES.Tomorrow:
+        const playDate = new Date();
+        playDate.setDate(playDate.getDate() + 1);
+        playDate.setHours(0,0,0,0);
+        timeFrom = toIsoString(playDate);
+        playDate.setDate(playDate.getDate() + 1);
+        timeTo = toIsoString(playDate);
+        break;
+      case TIME_FRAMES.ThisWeek:
+        timeFrom = toIsoString(new Date());
+        const inAWeek = new Date();
+        inAWeek.setDate(inAWeek.getDate() + 7);
+        inAWeek.setHours(0,0,0,0);
+        timeTo = toIsoString(inAWeek);
+        break;
+    }
+    if (timeFrom) {
+      url += `&time_from=${timeFrom}`;
+    }
+    if (timeTo) {
+      url += `&time_to=${timeTo}`;
+    }
     const newFilms = await fetch(url)
       .then(res => {
         if (res.ok) {
