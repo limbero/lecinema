@@ -103,10 +103,10 @@ const App = () => {
         break;
     }
     if (timeFrom) {
-      url += `&time_from=${timeFrom}`;
+      url += `&time_from=${encodeURIComponent(timeFrom)}`;
     }
     if (timeTo) {
-      url += `&time_to=${timeTo}`;
+      url += `&time_to=${encodeURIComponent(timeTo)}`;
     }
     const newFilms = await fetch(url)
       .then(res => {
