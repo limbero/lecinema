@@ -70,7 +70,7 @@ const App = () => {
   const getFilms = async () => {
     setError(null);
     setLoading(true);
-    let url = `https://home.limbe.ro/lecinema/films-showtimes?username=${username}`;
+    let url = `https://gcloud.limbe.ro/lecinema/films-showtimes?username=${username}`;
     if (isGeolocationAvailable && isGeolocationEnabled && coords?.latitude && coords?.longitude) {
       url += `&coordinates=${coords?.latitude?.toFixed(3)},${coords?.longitude?.toFixed(3)}`;
     }
