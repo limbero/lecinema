@@ -75,6 +75,7 @@ const App = () => {
       url += `&coordinates=${coords?.latitude?.toFixed(3)},${coords?.longitude?.toFixed(3)}`;
     }
     let timeFrom, timeTo;
+    // eslint-disable-next-line default-case
     switch (timeframe) {
       case TIME_FRAMES.Anytime:
         timeFrom = toIsoString(new Date());
