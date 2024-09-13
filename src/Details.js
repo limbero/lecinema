@@ -37,7 +37,7 @@ const Details = ({ film, close }) => {
                     <tr key={showing.id}>
                       <td>{showing.start_time}</td>
                       <td>{showing.cinema.name}</td>
-                      <td><a href={showing.booking_link}>Boka&nbsp;här</a></td>
+                      <td><a href={showing.booking_link || showing.cinema.website}>Boka&nbsp;här</a></td>
                     </tr>
                   ))}
                 </tbody>
