@@ -9,6 +9,7 @@ const Details = ({ film, close }) => {
     start_date: showing.start_at.split("T")[0],
     start_time: showing.start_at.slice(11, 16),
   }));
+  const showtimes_groupedby_date = Object.entries(Object.groupBy(showtimes, ({ start_date }) => start_date));
   return (
     <BackgroundCover onClick={close}>
       <Modal onClick={(e) => e.stopPropagation()}>
@@ -20,29 +21,32 @@ const Details = ({ film, close }) => {
           <p>
             <a href={film.url}>Read more on Letterboxd.</a>
           </p>
-          <ShowtimeTable>
-            <thead>
-              <tr>
-                <th>Datum</th>
-                <th>Tid</th>
-                <th>Biograf</th>
-                <th>Boka</th>
-              </tr>
-            </thead>
-            <tbody>
-              {showtimes.map(showing => (
-                <tr key={showing.id}>
-                  <td>{showing.start_date.replaceAll("-", "\u2011")}</td>
-                  <td>{showing.start_time}</td>
-                  <td>{showing.cinema.name}</td>
-                  <td><a href={showing.booking_link}>Boka&nbsp;här</a></td>
-                </tr>
-              ))}
-            </tbody>
-          </ShowtimeTable>
+          {showtimes_groupedby_date.map(([showing_date, showings]) => (
+            <React.Fragment key={showing_date}>
+              <h2 style={{ position: "sticky", top: 0, padding: "20px 0", margin: 0, background: "#FFF" }}>{showing_date}</h2>
+              <ShowtimeTable>
+                <thead>
+                  <tr>
+                    <th>Tid</th>
+                    <th>Biograf</th>
+                    <th>Boka</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {showings.map(showing => (
+                    <tr key={showing.id}>
+                      <td>{showing.start_time}</td>
+                      <td>{showing.cinema.name}</td>
+                      <td><a href={showing.booking_link}>Boka&nbsp;här</a></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </ShowtimeTable>
+            </React.Fragment>
+          ))}
         </Content>
-      </Modal>
-    </BackgroundCover>
+      </Modal >
+    </BackgroundCover >
   );
 };
 
@@ -56,7 +60,7 @@ const Title = styled.h1`
 `;
 
 const ShowtimeTable = styled.table`
-  margin: 30px auto 0;
+  margin: 0 auto;
 
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
@@ -73,7 +77,7 @@ const ShowtimeTable = styled.table`
 
   & thead tr {
     position: sticky;
-    top: 0px;
+    top: 67.5px;
 
     background: #500;
     color: #FFF;
