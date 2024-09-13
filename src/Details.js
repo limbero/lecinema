@@ -19,7 +19,7 @@ const Details = ({ film, close }) => {
         <Content>
           <Title>{film.original_language == "sv" ? film.original_title : film.title}</Title>
           <p>
-            <a href={film.url}>Read more on Letterboxd.</a>
+            <a href={film.url}>Läs mer på Letterboxd</a>
           </p>
           {showtimes_groupedby_date.map(([showing_date, showings]) => (
             <React.Fragment key={showing_date}>

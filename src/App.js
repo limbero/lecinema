@@ -44,10 +44,10 @@ const TIME_FRAMES = {
   ThisWeek: "this_week"
 };
 const TIME_FRAME_LABELS = {
-  Anytime: "Anytime",
-  Today: "Today",
-  Tomorrow: "Tomorrow",
-  ThisWeek: "This week"
+  Anytime: "När som helst",
+  Today: "Idag",
+  Tomorrow: "Imorgon",
+  ThisWeek: "Närmsta veckan"
 }
 
 const App = () => {
@@ -135,7 +135,7 @@ const App = () => {
       <SiteHeader>Le Cinema</SiteHeader>
       <HorizontalFlex style={{ gap: "20px" }}>
         <VerticalFlex>
-          <Label>When?</Label>
+          <Label>När?</Label>
           <ButtonGroup>
             {Object.entries(TIME_FRAMES).map(([key, value]) => (
               <div key={key}>
@@ -156,7 +156,7 @@ const App = () => {
         </VerticalFlex>
 
         <VerticalFlex>
-          <Label htmlFor="usernameField">Letterboxd username</Label>
+          <Label htmlFor="usernameField">Letterboxdanvändare</Label>
           <UsernameInput
             id="usernameField"
             value={username}
@@ -171,7 +171,7 @@ const App = () => {
         </VerticalFlex>
 
         <Button onClick={() => getFilms()} disabled={loading}>
-          Fetch
+          Hämta
         </Button>
       </HorizontalFlex>
       <LoadingDiv $loading={loading}>
