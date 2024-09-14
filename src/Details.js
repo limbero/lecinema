@@ -22,8 +22,8 @@ const Details = ({ film, close }) => {
             <a href={film.url}>Läs mer på Letterboxd</a>
           </p>
           {showtimes_groupedby_date.map(([showing_date, showings]) => (
-            <React.Fragment key={showing_date}>
-              <h2 style={{ position: "sticky", top: 0, padding: "20px 0", margin: 0, background: "#FFF" }}>{showing_date}</h2>
+            <div key={showing_date}>
+              <DateHeading>{showing_date}</DateHeading>
               <ShowtimeTable>
                 <thead>
                   <tr>
@@ -42,7 +42,7 @@ const Details = ({ film, close }) => {
                   ))}
                 </tbody>
               </ShowtimeTable>
-            </React.Fragment>
+            </div>
           ))}
         </Content>
       </Modal >
@@ -57,6 +57,14 @@ const Title = styled.h1`
 
   margin-top: 0;
   margin-bottom: 10px;
+`;
+
+const DateHeading = styled.h2`
+  position: sticky;
+  top: 0;
+  padding: 20px 0;
+  margin: 0;
+  background: #FFF;
 `;
 
 const ShowtimeTable = styled.table`
